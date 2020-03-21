@@ -5,7 +5,7 @@ index 294d20c6..1e5029e0 100644
 @@ -1,7 +1,7 @@
  ### Installed tests ############################################################
  
--installed_tests_execdir = abs_pkglibexecdir / 'installed-tests'
+-installed_tests_execdir = get_option('prefix') / pkglibexecdir / 'installed-tests'
 -installed_tests_metadir = abs_datadir / 'installed-tests' / meson.project_name()
 +installed_tests_execdir = get_option('installed_test_prefix') / 'libexec' / meson.project_name() / 'installed-tests'
 +installed_tests_metadir = get_option('installed_test_prefix') / 'share' / 'installed-tests' / meson.project_name()
