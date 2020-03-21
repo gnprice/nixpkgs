@@ -2,14 +2,14 @@
 
 stdenv.mkDerivation rec {
   pname = "gnome-shell-dash-to-dock-unstable";
-  version = "20200313";
+  version = "2020-03-19";
 
   src = fetchFromGitHub {
     owner = "micheleg";
     repo = "dash-to-dock";
     # rev = "extensions.gnome.org-v" + version;
-    rev = "800dc0abd65323f158b33a6c883329c036bb7bcb";
-    sha256 = "1a92q8yg4pdsn2f6qvn00lcxxm7l8sd67ii44kbbzbhkfa351l62";
+    rev = "c58004802b2eedfde96966a4ec0151fea2a1bd98";
+    sha256 = "IjunykPFP2CbGcd8XVqhPuNUOUOOgDAQFIytLaoyqRg=";
   };
 
   nativeBuildInputs = [
