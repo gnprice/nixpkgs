@@ -78,6 +78,13 @@ in stdenv.mkDerivation rec {
       url = "https://gitlab.gnome.org/GNOME/gnome-shell/commit/b18469427e5c19402111de5fe9888bceec0eaacd.patch";
       sha256 = "1M+3kjt7K61BFgk1Zf9XfK1ziilQGa60PD8xtVjnQec=";
     })
+
+    # Fix theming breakage after Shell restart on X11.
+    # https://gitlab.gnome.org/GNOME/gnome-shell/issues/2329
+    (fetchpatch {
+      url = "https://gitlab.gnome.org/GNOME/gnome-shell/commit/72c4f148ef88b4bffb2106b99434da5c05c0bb64.patch";
+      sha256 = "RBA+JHz4ZvmbJZMnGNieD6D5LONRgFU4iOFIMQQ2kHQ=";
+    })
   ];
 
   postPatch = ''
