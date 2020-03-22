@@ -3,6 +3,7 @@
 , ninja
 , gettext
 , fetchurl
+, fetchpatch
 , pkgconfig
 , gtk3
 , glib
@@ -40,6 +41,15 @@ stdenv.mkDerivation rec {
     url = "mirror://gnome/sources/epiphany/${stdenv.lib.versions.majorMinor version}/${pname}-${version}.tar.xz";
     sha256 = "1xjn6jk4dx2kl2llalydcyvibnpwjahp9z3210pflyy4k68pfw6l";
   };
+
+  patches = [
+    # Fix downloading files
+    # https://gitlab.gnome.org/GNOME/epiphany/issues/1127
+    (fetchpatch {
+      url = "https://gitlab.gnome.org/GNOME/epiphany/commit/8682a084bab7e758a9b8efe1deaf0cb8d55fcf44.patch";
+      sha256 = "bep+Q8Wpu84KA13a5T3JCz8nyeC13HT/QkMKvWT6vLk=";
+    })
+  ];
 
   # Tests need an X display
   mesonFlags = [
