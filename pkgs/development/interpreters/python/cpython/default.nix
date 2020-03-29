@@ -101,6 +101,19 @@ in with passthru; stdenv.mkDerivation {
   ] ++ optionals isPy35 [
     # Backports support for LD_LIBRARY_PATH from 3.6
     ./3.5/ld_library_path.patch
+  ] ++ optionals stdenv.isLinux [
+    # Optimize symbol tables for the sake of dynamic linking.
+    # Significant for Python because of extension modules.
+    (
+      if pythonAtLeast "3.8" then
+        ./3.8/link-opt.patch
+      else if isPy37 then
+        ./3.7/link-opt.patch
+      else if isPy36 then
+        ./3.6/link-opt.patch
+      else
+        ./2.7/link-opt.patch
+    )
   ] ++ optionals (isPy37 || isPy38) [
     # Fix darwin build https://bugs.python.org/issue34027
     ./3.7/darwin-libutil.patch
