@@ -65,6 +65,12 @@ in {
     inherit passthruFun;
   };
 
+  python27Pgo = python27.overrideAttrs(old: {
+    configureFlags = [ "--enable-optimizations" ] ++ old.configureFlags;
+    preBuild = ''patch -p1 < ${cpython/2.7/profile-task.patch}'';
+    patches = old.patches ++ [ ./cpython/2.7/link-opt.patch ];
+  });
+
   python35 = callPackage ./cpython {
     self = python35;
     sourceVersion = {
@@ -77,6 +83,12 @@ in {
     inherit (darwin) configd;
     inherit passthruFun;
   };
+
+  python35Pgo = python35.overrideAttrs(old: {
+    configureFlags = [ "--enable-optimizations" ] ++ old.configureFlags;
+    preBuild = ''patch -p1 < ${cpython/3.5/profile-task.patch}'';
+    patches = old.patches ++ [ ./cpython/2.7/link-opt.patch ];
+  });
 
   python36 = callPackage ./cpython {
     self = python36;
@@ -91,6 +103,12 @@ in {
     inherit passthruFun;
   };
 
+  python36Pgo = python36.overrideAttrs(old: {
+    configureFlags = [ "--enable-optimizations" ] ++ old.configureFlags;
+    preBuild = ''patch -p1 < ${cpython/3.6/profile-task.patch}'';
+    patches = old.patches ++ [ ./cpython/3.6/link-opt.patch ];
+  });
+
   python37 = callPackage ./cpython {
     self = python37;
     sourceVersion = {
@@ -103,6 +121,12 @@ in {
     inherit (darwin) configd;
     inherit passthruFun;
   };
+
+  python37Pgo = python37.overrideAttrs(old: {
+    configureFlags = [ "--enable-optimizations" ] ++ old.configureFlags;
+    preBuild = ''patch -p1 < ${cpython/3.6/profile-task.patch}'';
+    patches = old.patches ++ [ ./cpython/3.7/link-opt.patch ];
+  });
 
   python38 = callPackage ./cpython {
     self = python38;
@@ -117,6 +141,11 @@ in {
     inherit passthruFun;
   };
 
+  python38Pgo = python38.overrideAttrs(old: {
+    configureFlags = [ "--enable-optimizations" ] ++ old.configureFlags;
+    patches = old.patches ++ [ ./cpython/3.8/link-opt.patch ];
+  });
+
   python39 = callPackage ./cpython {
     self = python39;
     sourceVersion = {
@@ -129,6 +158,11 @@ in {
     inherit (darwin) configd;
     inherit passthruFun;
   };
+
+  python39Pgo = python39.overrideAttrs(old: {
+    configureFlags = [ "--enable-optimizations" ] ++ old.configureFlags;
+    patches = old.patches ++ [ ./cpython/3.8/link-opt.patch ];
+  });
 
   # Minimal versions of Python (built without optional dependencies)
   python3Minimal = (python37.override {

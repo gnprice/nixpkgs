@@ -101,19 +101,6 @@ in with passthru; stdenv.mkDerivation {
   ] ++ optionals isPy35 [
     # Backports support for LD_LIBRARY_PATH from 3.6
     ./3.5/ld_library_path.patch
-  ] ++ optionals stdenv.isLinux [
-    # Optimize symbol tables for the sake of dynamic linking.
-    # Significant for Python because of extension modules.
-    (
-      if pythonAtLeast "3.8" then
-        ./3.8/link-opt.patch
-      else if isPy37 then
-        ./3.7/link-opt.patch
-      else if isPy36 then
-        ./3.6/link-opt.patch
-      else
-        ./2.7/link-opt.patch
-    )
   ] ++ optionals (isPy37 || isPy38) [
     # Fix darwin build https://bugs.python.org/issue34027
     ./3.7/darwin-libutil.patch
@@ -148,14 +135,11 @@ in with passthru; stdenv.mkDerivation {
   PYTHONHASHSEED=0;
 
   configureFlags = [
-    "--enable-optimizations"
     "--enable-shared"
+    "--with-threads"
     "--without-ensurepip"
     "--with-system-expat"
     "--with-system-ffi"
-  ] ++ optionals (pythonOlder "3.7") [
-    # This is unconditionally true starting in CPython 3.7.
-    "--with-threads"
   ] ++ optionals (sqlite != null && isPy3k) [
     "--enable-loadable-sqlite-extensions"
   ] ++ optionals (openssl != null) [
@@ -200,18 +184,6 @@ in with passthru; stdenv.mkDerivation {
     export DETERMINISTIC_BUILD=1;
   '' + optionalString stdenv.hostPlatform.isMusl ''
     export NIX_CFLAGS_COMPILE+=" -DTHREAD_STACK_SIZE=0x100000"
-  '';
-
-  preBuild = optionalString (pythonOlder "3.8") ''
-    # At this step because it patches the Makefile.
-    patch -p1 < ${(
-      if isPy36 || isPy37 then
-        ./3.6/profile-task.patch
-      else if isPy35 then
-        ./3.5/profile-task.patch
-      else
-        ./2.7/profile-task.patch
-    )}
   '';
 
   setupHook = python-setup-hook sitePackages;
