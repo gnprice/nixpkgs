@@ -135,6 +135,7 @@ let
     '';
 
   configureFlags = [
+    "--enable-optimizations"
     "--enable-shared"
     "--with-threads"
     "--enable-unicode=ucs${toString ucsEncoding}"
@@ -173,6 +174,9 @@ let
   ++ optional stdenv.hostPlatform.isLinux "ac_cv_func_lchmod=no"
   ++ optional static "LDFLAGS=-static";
 
+  # At this step because it patches the Makefile.
+  preBuild = ''patch -p1 < ${./profile-task.patch}'';
+
   buildInputs =
     optional (stdenv ? cc && stdenv.cc.libc != null) stdenv.cc.libc ++
     [ bzip2 openssl zlib ]
@@ -201,7 +205,7 @@ in with passthru; stdenv.mkDerivation ({
     pname = "python";
     inherit version;
 
-    inherit src patches buildInputs nativeBuildInputs preConfigure configureFlags;
+    inherit src patches buildInputs nativeBuildInputs preConfigure configureFlags preBuild;
 
     LDFLAGS = stdenv.lib.optionalString (!stdenv.isDarwin) "-lgcc_s";
     inherit (mkPaths buildInputs) C_INCLUDE_PATH LIBRARY_PATH;

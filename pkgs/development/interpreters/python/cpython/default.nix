@@ -135,6 +135,7 @@ in with passthru; stdenv.mkDerivation {
   PYTHONHASHSEED=0;
 
   configureFlags = [
+    "--enable-optimizations"
     "--enable-shared"
     "--without-ensurepip"
     "--with-system-expat"
@@ -186,6 +187,16 @@ in with passthru; stdenv.mkDerivation {
     export DETERMINISTIC_BUILD=1;
   '' + optionalString stdenv.hostPlatform.isMusl ''
     export NIX_CFLAGS_COMPILE+=" -DTHREAD_STACK_SIZE=0x100000"
+  '';
+
+  preBuild = optionalString (pythonOlder "3.8") ''
+    # At this step because it patches the Makefile.
+    patch -p1 < ${(
+      if isPy36 || isPy37 then
+        ./3.6/profile-task.patch
+      else
+        ./3.5/profile-task.patch
+    )}
   '';
 
   setupHook = python-setup-hook sitePackages;
