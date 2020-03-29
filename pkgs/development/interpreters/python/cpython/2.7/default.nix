@@ -96,6 +96,10 @@ let
       # libuuid, slowing down program startup a lot).
       ./no-ldconfig.patch
 
+      # Optimize symbol tables for the sake of dynamic linking.
+      # Significant for Python because of extension modules.
+      ./link-opt.patch
+
     ] ++ optionals stdenv.hostPlatform.isCygwin [
       ./2.5.2-ctypes-util-find_library.patch
       ./2.5.2-tkinter-x11.patch
