@@ -15,9 +15,9 @@ index b769d5962..ed72a9a8b 100755
 -		LDCXXSHARED='$(CXX) -shared';;
 +		LDSHARED='$(CC) -shared -Wl,-O1 -Wl,-Bsymbolic-functions'
 +		LDCXXSHARED='$(CXX) -shared -Wl,-O1 -Wl,-Bsymbolic-functions';;
- 	BSD/OS*/4*)
- 		LDSHARED="gcc -shared"
- 		LDCXXSHARED="g++ -shared";;
+	BSD/OS*/4*)
+		LDSHARED="gcc -shared"
+		LDCXXSHARED="g++ -shared";;
 @@ -9507,7 +9507,7 @@ then
 	    LINKFORSHARED="-Wl,-E -Wl,+s";;
  #	    LINKFORSHARED="-Wl,-E -Wl,+s -Wl,+b\$(BINLIBDEST)/lib-dynload";;
