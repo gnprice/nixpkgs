@@ -9487,6 +9487,10 @@ in
   python38Full = python38.override{x11Support=true;};
   python39Full = python39.override{x11Support=true;};
 
+  python37Lto = python37.overrideAttrs (old: {
+    configureFlags = [ "--with-lto" ] ++ old.configureFlags;
+  });
+
   # pythonPackages further below, but assigned here because they need to be in sync
   pythonPackages = python.pkgs;
   python2Packages = python2.pkgs;
