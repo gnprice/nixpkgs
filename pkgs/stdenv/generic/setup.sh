@@ -967,27 +967,29 @@ configurePhase() {
         done
     fi
 
+    local flagsArray=()
+
     if [[ -z "${dontAddPrefix:-}" && -n "$prefix" ]]; then
-        configureFlags="${prefixKey:---prefix=}$prefix $configureFlags"
+        flagsArray+=( "${prefixKey:---prefix=}$prefix" )
     fi
 
     # Add --disable-dependency-tracking to speed up some builds.
     if [ -z "${dontAddDisableDepTrack:-}" ]; then
         if [ -f "$configureScript" ] && grep -q dependency-tracking "$configureScript"; then
-            configureFlags="--disable-dependency-tracking $configureFlags"
+            flagsArray+=( --disable-dependency-tracking )
         fi
     fi
 
     # By default, disable static builds.
     if [ -z "${dontDisableStatic:-}" ]; then
         if [ -f "$configureScript" ] && grep -q enable-static "$configureScript"; then
-            configureFlags="--disable-static $configureFlags"
+            flagsArray+=( --disable-static )
         fi
     fi
 
     if [ -n "$configureScript" ]; then
         # shellcheck disable=SC2086
-        local flagsArray=( $configureFlags )
+        flagsArray+=( $configureFlags )
         # Old-bash empty-array hack
         flagsArray+=( ${configureFlagsArray+"${configureFlagsArray[@]}"} )
         echoCmd 'configure flags' "${flagsArray[@]}"
