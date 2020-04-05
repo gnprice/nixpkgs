@@ -1,6 +1,6 @@
 source $stdenv/setup
 
-configureFlags="-prefix $out $configureFlags"
+configureFlagsArray+=( -prefix $out )
 genericBuild
 
 #cd emacs/
