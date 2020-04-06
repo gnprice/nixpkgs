@@ -988,6 +988,8 @@ configurePhase() {
     fi
 
     if [ -n "$configureScript" ]; then
+        # Old-bash empty-array hack
+        flagsArray+=( ${configureFlagsPreArray+"${configureFlagsPreArray[@]}"} )
         # shellcheck disable=SC2086
         flagsArray+=( $configureFlags )
         # Old-bash empty-array hack
