@@ -172,8 +172,14 @@ addToSearchPath() {
     addToSearchPathWithCustomDelimiter ":" "$@"
 }
 
-# Prepend elements to variable "$1", as an array if __structuredAttrs
-# or a space-separated string if not.
+# Prepend elements to variable "$1", which may come from an attr.
+#
+# This is useful in generic setup code, which must (for now) support
+# both derivations with and without __structuredAttrs true, so the
+# variable may be an array or a space-separated string.
+#
+# Expressions for individual packages should simply switch to array
+# syntax when they switch to setting __structuredAttrs = true.
 _prepend() {
     varName="$1"; shift
     if [ -n "$__structuredAttrs" ]; then
