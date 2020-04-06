@@ -1042,22 +1042,29 @@ configurePhase() {
 buildPhase() {
     runHook preBuild
 
-    # set to empty if unset
-    : ${makeFlags=}
-
-    if [[ -z "$makeFlags" && -z "${makefile:-}" && ! ( -e Makefile || -e makefile || -e GNUmakefile ) ]]; then
+    if [[ -z "${makeFlags-}" && -z "${makefile:-}" && ! ( -e Makefile || -e makefile || -e GNUmakefile ) ]]; then
         echo "no Makefile, doing nothing"
     else
         foundMakefile=1
 
-        # Old bash empty array hack
         # shellcheck disable=SC2086
         local flagsArray=(
             ${enableParallelBuilding:+-j${NIX_BUILD_CORES} -l${NIX_BUILD_CORES}}
             SHELL=$SHELL
-            $makeFlags ${makeFlagsArray+"${makeFlagsArray[@]}"}
-            $buildFlags ${buildFlagsArray+"${buildFlagsArray[@]}"}
         )
+        if [ -n "$__structuredAttrs" ]; then
+            flagsArray+=(
+                ${makeFlags+"${makeFlags[@]}"}
+                ${makeFlagsArray+"${makeFlagsArray[@]}"}
+                ${buildFlags+"${buildFlags[@]}"}
+                ${buildFlagsArray+"${buildFlagsArray[@]}"}
+            )
+        else
+            flagsArray+=(
+                ${makeFlags-} ${makeFlagsArray+"${makeFlagsArray[@]}"}
+                ${buildFlags-} ${buildFlagsArray+"${buildFlagsArray[@]}"}
+            )
+        fi
 
         echoCmd 'build flags' "${flagsArray[@]}"
         make ${makefile:+-f $makefile} "${flagsArray[@]}"
@@ -1094,10 +1101,23 @@ checkPhase() {
         local flagsArray=(
             ${enableParallelChecking:+-j${NIX_BUILD_CORES} -l${NIX_BUILD_CORES}}
             SHELL=$SHELL
-            $makeFlags ${makeFlagsArray+"${makeFlagsArray[@]}"}
-            ${checkFlags:-VERBOSE=y} ${checkFlagsArray+"${checkFlagsArray[@]}"}
-            ${checkTarget}
         )
+        if [ -n "$__structuredAttrs" ]; then
+            flagsArray+=(
+                ${makeFlags+"${makeFlags[@]}"}
+                ${makeFlagsArray+"${makeFlagsArray[@]}"}
+                "${checkFlags[@]:-VERBOSE=y}"
+                ${checkFlagsArray+"${checkFlagsArray[@]}"}
+            )
+        else
+            flagsArray+=(
+                ${makeFlags-}
+                ${makeFlagsArray+"${makeFlagsArray[@]}"}
+                ${checkFlags:-VERBOSE=y}
+                ${checkFlagsArray+"${checkFlagsArray[@]}"}
+            )
+        fi
+        flagsArray+=( "${checkTarget}" )
 
         echoCmd 'check flags' "${flagsArray[@]}"
         make ${makefile:+-f $makefile} "${flagsArray[@]}"
@@ -1116,14 +1136,25 @@ installPhase() {
         mkdir -p "$prefix"
     fi
 
-    # Old bash empty array hack
     # shellcheck disable=SC2086
     local flagsArray=(
         SHELL=$SHELL
-        $makeFlags ${makeFlagsArray+"${makeFlagsArray[@]}"}
-        $installFlags ${installFlagsArray+"${installFlagsArray[@]}"}
-        ${installTargets:-install}
     )
+    if [ -n "$__structuredAttrs" ]; then
+        flagsArray+=(
+            ${makeFlags+"${makeFlags[@]}"}
+            ${makeFlagsArray+"${makeFlagsArray[@]}"}
+            ${installFlags+"${installFlags[@]}"}
+            ${installFlagsArray+"${installFlagsArray[@]}"}
+            "${installTargets[@]:-install}"
+        )
+    else
+        flagsArray+=(
+            ${makeFlags-} ${makeFlagsArray+"${makeFlagsArray[@]}"}
+            ${installFlags-} ${installFlagsArray+"${installFlagsArray[@]}"}
+            ${installTargets:-install}
+        )
+    fi
 
     echoCmd 'install flags' "${flagsArray[@]}"
     make ${makefile:+-f $makefile} "${flagsArray[@]}"
