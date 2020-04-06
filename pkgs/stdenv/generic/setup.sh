@@ -5,6 +5,12 @@ if (( "${NIX_DEBUG:-0}" >= 6 )); then
     set -x
 fi
 
+if [ -f .attrs.sh ]; then
+    __structuredAttrs=1
+else
+    __structuredAttrs=
+fi
+
 : ${outputs:=out}
 
 
@@ -164,6 +170,19 @@ addToSearchPathWithCustomDelimiter() {
 
 addToSearchPath() {
     addToSearchPathWithCustomDelimiter ":" "$@"
+}
+
+# Prepend elements to variable "$1", as an array if __structuredAttrs
+# or a space-separated string if not.
+_prepend() {
+    varName="$1"; shift
+    if [ -n "$__structuredAttrs" ]; then
+        # e.g., buildFlags=( "$@" ${buildFlags+"${buildFlags[@]}"} )
+        eval $varName'=( "$@" ${'$varName'+"${'$varName'[@]}"} )'
+    else
+        # e.g., buildFlags="$* $buildFlags"
+        eval $varName'="$* $'$varName'"'
+    fi
 }
 
 # Add $1/lib* into rpaths.
@@ -968,20 +987,20 @@ configurePhase() {
     fi
 
     if [[ -z "${dontAddPrefix:-}" && -n "$prefix" ]]; then
-        configureFlags="${prefixKey:---prefix=}$prefix $configureFlags"
+        _prepend configureFlags "${prefixKey:---prefix=}$prefix"
     fi
 
     # Add --disable-dependency-tracking to speed up some builds.
     if [ -z "${dontAddDisableDepTrack:-}" ]; then
         if [ -f "$configureScript" ] && grep -q dependency-tracking "$configureScript"; then
-            configureFlags="--disable-dependency-tracking $configureFlags"
+            _prepend configureFlags --disable-dependency-tracking
         fi
     fi
 
     # By default, disable static builds.
     if [ -z "${dontDisableStatic:-}" ]; then
         if [ -f "$configureScript" ] && grep -q enable-static "$configureScript"; then
-            configureFlags="--disable-static $configureFlags"
+            _prepend configureFlags --disable-static
         fi
     fi
 
