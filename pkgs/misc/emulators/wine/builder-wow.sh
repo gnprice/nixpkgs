@@ -11,14 +11,14 @@ mkdir -p $TMP/wine-wow $TMP/wine64
 
 cd $TMP/wine64
 sourceRoot=`pwd`
-configureFlags="--enable-win64"
+configureFlagsArray=( --enable-win64 )
 configurePhase
 buildPhase
 # checkPhase
 
 cd $TMP/wine-wow
 sourceRoot=`pwd`
-configureFlags="--with-wine64=../wine64"
+configureFlagsArray=( --with-wine64=../wine64 )
 configurePhase
 buildPhase
 # checkPhase
