@@ -1005,13 +1005,20 @@ configurePhase() {
     fi
 
     if [ -n "$configureScript" ]; then
-        # shellcheck disable=SC2086
-        local flagsArray=( $configureFlags )
+        local -a flagsArray
+        if [ -n "$__structuredAttrs" ]; then
+            flagsArray=( ${configureFlags+"${configureFlags[@]}"} )
+        else
+            # shellcheck disable=SC2086
+            flagsArray=( $configureFlags )
+        fi
         # Old-bash empty-array hack
         flagsArray+=( ${configureFlagsArray+"${configureFlagsArray[@]}"} )
         echoCmd 'configure flags' "${flagsArray[@]}"
+
         # shellcheck disable=SC2086
         $configureScript "${flagsArray[@]}"
+
         unset flagsArray
     else
         echo "no configure script, doing nothing"
