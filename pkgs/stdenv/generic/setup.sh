@@ -191,6 +191,20 @@ _prepend() {
     fi
 }
 
+# Accumulate into `flagsArray` the flags from the given variables.
+#
+# If __structuredAttrs, the variables are all treated as arrays
+# and simply concatenated onto `flagsArray`.
+#
+# If not __structuredAttrs, then:
+#   * Each variable is treated as a string, and split on whitespace;
+#   * except variables whose names end in "Array", which are treated
+#     as arrays.
+_accumFlags() {
+    # WORK HERE; then use for configureFlags, but especially makeFlags
+    # and friends, below.
+}
+
 # Add $1/lib* into rpaths.
 # The function is used in multiple-outputs.sh hook,
 # so it is defined here but tried after the hook.
