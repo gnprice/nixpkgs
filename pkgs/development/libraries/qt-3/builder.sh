@@ -21,7 +21,7 @@ dontAddPrefix=1
 
 configureScript=configureScript
 configureScript() {
-    echo yes | ./configure $configureFlags
+    echo yes | ./configure "$@"
     export LD_LIBRARY_PATH=$(pwd)/lib
 }
 
