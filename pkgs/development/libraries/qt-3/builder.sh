@@ -16,7 +16,7 @@ preConfigure() {
 
 
 # !!! TODO: -system-libmng
-configureFlags="-prefix $out $configureFlags"
+configureFlagsArray+=( -prefix $out )
 dontAddPrefix=1
 
 configureScript=configureScript
