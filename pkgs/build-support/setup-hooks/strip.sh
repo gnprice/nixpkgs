@@ -23,14 +23,20 @@ _doStrip() {
         if [[ "${dontStrip-}" || "${flag-}" ]] || ! type -f "${stripCmd-}" 2>/dev/null
         then continue; fi
 
-        stripDebugList=${stripDebugList:-lib lib32 lib64 libexec bin sbin}
+        # TODO(structured-attrs): After __structuredAttrs = true is universal,
+        # clean this up to use arrays throughout rather than strings.
+        # (Until then, we just convert to strings here with [*]; it's
+        #  not worth complicating this code to be conditional, because
+        #  the values are always such that the behavior is the same.)
+
+        stripDebugList=${stripDebugList[*]:-lib lib32 lib64 libexec bin sbin}
         if [ -n "$stripDebugList" ]; then
-            stripDirs "$stripCmd" "$stripDebugList" "${stripDebugFlags:--S}"
+            stripDirs "$stripCmd" "$stripDebugList" "${stripDebugFlags[*]:--S}"
         fi
 
-        stripAllList=${stripAllList:-}
+        stripAllList=${stripAllList[*]:-}
         if [ -n "$stripAllList" ]; then
-            stripDirs "$stripCmd" "$stripAllList" "${stripAllFlags:--s}"
+            stripDirs "$stripCmd" "$stripAllList" "${stripAllFlags[*]:--s}"
         fi
     done
 }
