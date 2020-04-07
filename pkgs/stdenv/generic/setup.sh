@@ -479,6 +479,14 @@ findInputs() {
     done
 }
 
+# TODO(structured-attrs): After __structuredAttrs = true is universal,
+# clean up the processing of deps* and *Inputs to be explicit that
+# these are arrays rather than strings.
+#
+# Until then, we rely on the fact that all valid values for these
+# attrs are lists of space-free words, and write code that behaves
+# correctly when [ "x" "y" ] is encoded either as a="x y" or a=(x y).
+
 # Make sure all are at least defined as empty
 : ${depsBuildBuild=} ${depsBuildBuildPropagated=}
 : ${nativeBuildInputs=} ${propagatedNativeBuildInputs=} ${defaultNativeBuildInputs=}
@@ -487,29 +495,29 @@ findInputs() {
 : ${buildInputs=} ${propagatedBuildInputs=} ${defaultBuildInputs=}
 : ${depsTargetTarget=} ${depsTargetTargetPropagated=}
 
-for pkg in $depsBuildBuild $depsBuildBuildPropagated; do
+for pkg in ${depsBuildBuild[@]} ${depsBuildBuildPropagated[@]}; do
     findInputs "$pkg" -1 -1
 done
-for pkg in $nativeBuildInputs $propagatedNativeBuildInputs; do
+for pkg in ${nativeBuildInputs[@]} ${propagatedNativeBuildInputs[@]}; do
     findInputs "$pkg" -1  0
 done
-for pkg in $depsBuildTarget $depsBuildTargetPropagated; do
+for pkg in ${depsBuildTarget[@]} ${depsBuildTargetPropagated[@]}; do
     findInputs "$pkg" -1  1
 done
-for pkg in $depsHostHost $depsHostHostPropagated; do
+for pkg in ${depsHostHost[@]} ${depsHostHostPropagated[@]}; do
     findInputs "$pkg"  0  0
 done
-for pkg in $buildInputs $propagatedBuildInputs ; do
+for pkg in ${buildInputs[@]} ${propagatedBuildInputs[@]} ; do
     findInputs "$pkg"  0  1
 done
-for pkg in $depsTargetTarget $depsTargetTargetPropagated; do
+for pkg in ${depsTargetTarget[@]} ${depsTargetTargetPropagated[@]}; do
     findInputs "$pkg"  1  1
 done
 # Default inputs must be processed last
-for pkg in $defaultNativeBuildInputs; do
+for pkg in ${defaultNativeBuildInputs[@]}; do
     findInputs "$pkg" -1  0
 done
-for pkg in $defaultBuildInputs; do
+for pkg in ${defaultBuildInputs[@]}; do
     findInputs "$pkg"  0  1
 done
 
