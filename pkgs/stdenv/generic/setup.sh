@@ -211,7 +211,7 @@ _accumFlagsArray() {
                 *Array)
                     eval 'flagsArray+=( ${'$name'+"${'$name'[@]}"} )' ;;
                 *)
-                    eval 'flagsArray+=( $'$name' )' ;;
+                    eval 'flagsArray+=( ${'$name'-} )' ;;
             esac
         done
     fi
