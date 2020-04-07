@@ -1071,19 +1071,7 @@ buildPhase() {
             ${enableParallelBuilding:+-j${NIX_BUILD_CORES} -l${NIX_BUILD_CORES}}
             SHELL=$SHELL
         )
-        if [ -n "$__structuredAttrs" ]; then
-            flagsArray+=(
-                ${makeFlags+"${makeFlags[@]}"}
-                ${makeFlagsArray+"${makeFlagsArray[@]}"}
-                ${buildFlags+"${buildFlags[@]}"}
-                ${buildFlagsArray+"${buildFlagsArray[@]}"}
-            )
-        else
-            flagsArray+=(
-                ${makeFlags-} ${makeFlagsArray+"${makeFlagsArray[@]}"}
-                ${buildFlags-} ${buildFlagsArray+"${buildFlagsArray[@]}"}
-            )
-        fi
+        _accumFlagsArray makeFlags makeFlagsArray buildFlags buildFlagsArray
 
         echoCmd 'build flags' "${flagsArray[@]}"
         make ${makefile:+-f $makefile} "${flagsArray[@]}"
@@ -1121,21 +1109,13 @@ checkPhase() {
             ${enableParallelChecking:+-j${NIX_BUILD_CORES} -l${NIX_BUILD_CORES}}
             SHELL=$SHELL
         )
+        _accumFlagsArray makeFlags makeFlagsArray
         if [ -n "$__structuredAttrs" ]; then
-            flagsArray+=(
-                ${makeFlags+"${makeFlags[@]}"}
-                ${makeFlagsArray+"${makeFlagsArray[@]}"}
-                "${checkFlags[@]:-VERBOSE=y}"
-                ${checkFlagsArray+"${checkFlagsArray[@]}"}
-            )
+            flagsArray+=( "${checkFlags[@]:-VERBOSE=y}" )
         else
-            flagsArray+=(
-                ${makeFlags-}
-                ${makeFlagsArray+"${makeFlagsArray[@]}"}
-                ${checkFlags:-VERBOSE=y}
-                ${checkFlagsArray+"${checkFlagsArray[@]}"}
-            )
+            flagsArray+=( ${checkFlags:-VERBOSE=y} )
         fi
+        _accumFlagsArray checkFlagsArray
         flagsArray+=( "${checkTarget}" )
 
         echoCmd 'check flags' "${flagsArray[@]}"
@@ -1159,20 +1139,11 @@ installPhase() {
     local flagsArray=(
         SHELL=$SHELL
     )
+    _accumFlagsArray makeFlags makeFlagsArray installFlags installFlagsArray
     if [ -n "$__structuredAttrs" ]; then
-        flagsArray+=(
-            ${makeFlags+"${makeFlags[@]}"}
-            ${makeFlagsArray+"${makeFlagsArray[@]}"}
-            ${installFlags+"${installFlags[@]}"}
-            ${installFlagsArray+"${installFlagsArray[@]}"}
-            "${installTargets[@]:-install}"
-        )
+        flagsArray+=( "${installTargets[@]:-install}" )
     else
-        flagsArray+=(
-            ${makeFlags-} ${makeFlagsArray+"${makeFlagsArray[@]}"}
-            ${installFlags-} ${installFlagsArray+"${installFlagsArray[@]}"}
-            ${installTargets:-install}
-        )
+        flagsArray+=( ${installTargets:-install} )
     fi
 
     echoCmd 'install flags' "${flagsArray[@]}"
