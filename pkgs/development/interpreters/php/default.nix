@@ -246,7 +246,7 @@ let
 
     patches = [ ./fix-paths-php7.patch ] ++ extraPatches;
 
-    stripDebugList = "bin sbin lib modules";
+    stripDebugList = [ "bin" "sbin" "lib" "modules" ];
 
     outputs = [ "out" "dev" ];
   };
