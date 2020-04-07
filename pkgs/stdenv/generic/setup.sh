@@ -187,7 +187,7 @@ _prepend() {
         eval $varName'=( "$@" ${'$varName'+"${'$varName'[@]}"} )'
     else
         # e.g., buildFlags="$* $buildFlags"
-        eval $varName'="$* $'$varName'"'
+        eval $varName'="$* ${'$varName'-}"'
     fi
 }
 
