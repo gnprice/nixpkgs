@@ -90,7 +90,7 @@ in rec {
 
     # Experimental.  For simple packages mostly just works,
     # but for anything complex, be prepared to debug if enabling.
-    , __structuredAttrs ? false
+    , __structuredAttrs ? true
 
     , ... } @ attrs:
 
