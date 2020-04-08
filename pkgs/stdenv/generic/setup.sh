@@ -11,8 +11,6 @@ else
     __structuredAttrs=
 fi
 
-: ${outputs:=out}
-
 
 ######################################################################
 # Hook handling.
@@ -310,6 +308,18 @@ fi
 if [ -z "${SHELL:-}" ]; then echo "SHELL not set"; exit 1; fi
 BASH="$SHELL"
 export CONFIG_SHELL="$SHELL"
+
+
+# Set up shell-style variables for outputs.
+#
+# Output names are identifiers and values are store paths,
+# so they're all space-free and this style works cleanly.
+if [ -n "$__structuredAttrs" ]; then
+    for outputName in "${!outputs[@]}"; do
+        eval export\ "$outputName"="${outputs[$outputName]}"
+    done
+    export outputs="${!outputs[*]}"
+fi
 
 
 # Execute the pre-hook.
