@@ -1,3 +1,12 @@
+{ attr ? "tmp"
+, path
+}:
+
+# usage:
+# $ nix-shell -p $(nix-build $(nix-instantiate sample.nix \
+#     --argstr attr netmask
+#     --arg path pkgs/tools/networking/netmask))
+
 let
   devpkgs = import ./. { };
 
@@ -19,7 +28,7 @@ let
       in {
         devStdenv = stdenv;
 
-        netmask = super.callPackage pkgs/tools/networking/netmask {
+        ${attr} = super.callPackage path {
           inherit stdenv;
         };
       })
@@ -28,4 +37,4 @@ let
 in
 
 # pkgs.devStdenv
-pkgs.netmask
+pkgs.${attr}
