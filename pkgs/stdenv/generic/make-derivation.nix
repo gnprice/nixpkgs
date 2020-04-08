@@ -88,7 +88,7 @@ in rec {
 
     , patches ? []
 
-    , __structuredAttrs ? false
+    , __structuredAttrs ? true
 
     , ... } @ attrs:
 
