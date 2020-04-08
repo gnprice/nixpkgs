@@ -1319,14 +1319,20 @@ genericBuild() {
         return
     fi
 
-    if [ -z "${phases:-}" ]; then
-        phases="${prePhases:-} unpackPhase patchPhase ${preConfigurePhases:-} \
-            configurePhase ${preBuildPhases:-} buildPhase checkPhase \
-            ${preInstallPhases:-} installPhase ${preFixupPhases:-} fixupPhase installCheckPhase \
-            ${preDistPhases:-} distPhase ${postPhases:-}";
+    # TODO(structured-attrs): After __structuredAttrs = true is
+    # universal, make this code explicit that `phases` and `*Phases`
+    # are arrays rather than strings.
+    #
+    # Until then, we use a style that behaves correctly either way,
+    # relying on the fact that phase names are space-free.
+    if [ -z "${phases[*]:-}" ]; then
+        phases="${prePhases[*]:-} unpackPhase patchPhase ${preConfigurePhases[*]:-} \
+            configurePhase ${preBuildPhases[*]:-} buildPhase checkPhase \
+            ${preInstallPhases[*]:-} installPhase ${preFixupPhases[*]:-} fixupPhase installCheckPhase \
+            ${preDistPhases[*]:-} distPhase ${postPhases[*]:-}";
     fi
 
-    for curPhase in $phases; do
+    for curPhase in ${phases[*]}; do
         if [[ "$curPhase" = unpackPhase && -n "${dontUnpack:-}" ]]; then continue; fi
         if [[ "$curPhase" = configurePhase && -n "${dontConfigure:-}" ]]; then continue; fi
         if [[ "$curPhase" = buildPhase && -n "${dontBuild:-}" ]]; then continue; fi
