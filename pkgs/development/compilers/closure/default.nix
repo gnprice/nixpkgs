@@ -3,6 +3,7 @@
 stdenv.mkDerivation rec {
   pname = "closure-compiler";
   version = "20200315";
+  __structuredAttrs = true;
 
   src = fetchurl {
     url = "https://dl.google.com/closure-compiler/compiler-${version}.tar.gz";
