@@ -18,7 +18,7 @@ let
             extraNativeBuildInputs;
           allowedRequisites =
             builtins.filter (p: !(lib.hasSuffix ".sh" p))
-              super.stdenv.allowedRequisites;
+              self.stdenv.allowedRequisites;
         };
 
       in {
