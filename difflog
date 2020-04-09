@@ -32,10 +32,14 @@ striplog() {
            <20200102-030405>gm;
 
           # Sort runs of adjacent lines of each of these types.
+          s<(^(libtool: compile: |/nix/store/\S+/bin/bash \S+/libtool ).*\n)+>
+           < join("", sort(split /^/, $&)) >egm;
+          s<(^(libtool: link: |/nix/store/\S+/bin/bash \S+/libtool ).*\n)+>
+           < join("", sort(split /^/, $&)) >egm;
           s<(^shrinking /nix/store/.*\n)+>
-           < join("", sort(split /^/, $&)) >em;
+           < join("", sort(split /^/, $&)) >egm;
           s<(^/nix/store/\S+: interpreter directive changed .*\n)+>
-           < join("", sort(split /^/, $&)) >em;
+           < join("", sort(split /^/, $&)) >egm;
         '
 }
 
