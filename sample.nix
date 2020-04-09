@@ -21,6 +21,6 @@ let
   devStdenv = graftStdenv nixpkgs.stdenv devpkgs.stdenv;
 in
 
-nixpkgs.${attr}.override {
+(lib.getAttrFromPath (lib.splitString "." attr) nixpkgs).override {
   stdenv = devStdenv;
 }
