@@ -26,6 +26,16 @@ striplog() {
           # ECMA-48 control sequences.  I see color in gcc warnings
           # locally, but not in cached builds.
           s<\e\[.*?[\x40-\x7e]><>g;
+
+          # Fix some dates that sneak in impurely.
+          s<^configure: autobuild timestamp\.\.\. \K\d+-\d+>
+           <20200102-030405>gm;
+
+          # Sort runs of adjacent lines of each of these types.
+          s<(^shrinking /nix/store/.*\n)+>
+           < join("", sort(split /^/, $&)) >em;
+          s<(^/nix/store/\S+: interpreter directive changed .*\n)+>
+           < join("", sort(split /^/, $&)) >em;
         '
 }
 
@@ -35,8 +45,3 @@ striplog "$1" >"$d"/a.log
 striplog "$2" >"$d"/b.log
 
 git diff --no-index "$d"/{a,b}.log
-
-# Remaining spurious differences:
-#  * "shrinking /nix/store/..." lines reordered
-#  * "interpreter directive changed" lines reordered
-#  * "configure: autobuild timestamp... 20200409-035514"
