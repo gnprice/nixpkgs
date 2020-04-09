@@ -1,0 +1,42 @@
+#!/bin/bash
+set -eu
+
+extract_hash() {
+    local b="${1##*/}"
+    echo "${b%%-*}"
+}
+
+striplog() {
+    hash=$(extract_hash "$1")
+
+    # `expand` is because in `make` trace lines, I see
+    # continuation lines indented with tabs locally
+    # but spaces in cached builds.
+    nix log "$1" \
+      | expand \
+      | hash="$hash" \
+        perl -0pe '
+          # Normalize away the output hash.
+          s<$ENV{"hash"}>
+           <00000000000000000000000000000000>g;
+
+          # I see these locally but not in cached builds.
+          s<^\@nix \{.*\n><>gm;
+
+          # ECMA-48 control sequences.  I see color in gcc warnings
+          # locally, but not in cached builds.
+          s<\e\[.*?[\x40-\x7e]><>g;
+        '
+}
+
+d=$(mktemp -d)
+
+striplog "$1" >"$d"/a.log
+striplog "$2" >"$d"/b.log
+
+git diff --no-index "$d"/{a,b}.log
+
+# Remaining spurious differences:
+#  * "shrinking /nix/store/..." lines reordered
+#  * "interpreter directive changed" lines reordered
+#  * "configure: autobuild timestamp... 20200409-035514"
