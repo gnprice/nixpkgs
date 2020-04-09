@@ -14,10 +14,8 @@ let
     overlays = [
       (self: super: let
         stdenv = devpkgs.stdenv.override {
-          initialPath = self.stdenv.initialPath;
-          cc = self.gcc;
-          shell = self.stdenv.shell;
-          extraNativeBuildInputs = [ self.patchelf ];
+          inherit (self.stdenv) initialPath cc shell
+            extraNativeBuildInputs;
           allowedRequisites =
             builtins.filter (p: !(lib.hasSuffix ".sh" p))
               super.stdenv.allowedRequisites;
