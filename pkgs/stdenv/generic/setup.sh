@@ -199,6 +199,7 @@ _prepend() {
 #   * except variables whose names end in "Array", which are treated
 #     as arrays.
 _accumFlagsArray() {
+    local name
     if [ -n "$__structuredAttrs" ]; then
         for name in "$@"; do
             eval 'flagsArray+=( ${'$name'+"${'$name'[@]}"} )'
