@@ -179,7 +179,7 @@ addToSearchPath() {
 # Expressions for individual packages should simply switch to array
 # syntax when they switch to setting __structuredAttrs = true.
 _prepend() {
-    varName="$1"; shift
+    local varName="$1"; shift
     if [ -n "$__structuredAttrs" ]; then
         # e.g., buildFlags=( "$@" ${buildFlags+"${buildFlags[@]}"} )
         eval $varName'=( "$@" ${'$varName'+"${'$varName'[@]}"} )'
