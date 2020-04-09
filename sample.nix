@@ -1,40 +1,26 @@
-{ attr ? "tmp"
-, path
+{ attr
 }:
 
 # usage:
 # $ nix-shell -p $(nix-build $(nix-instantiate sample.nix \
-#     --argstr attr netmask
-#     --arg path pkgs/tools/networking/netmask))
+#     --argstr attr netmask))
 
 let
   devpkgs = import ./. { };
+  nixpkgs = import <nixpkgs> { };
 
   inherit (devpkgs) lib;
 
-  pkgs = import <nixpkgs> {
-    overlays = [
-      (self: super: let
-        stdenv = devpkgs.stdenv.override {
-          initialPath = self.stdenv.initialPath;
-          cc = self.gcc;
-          shell = self.stdenv.shell;
-          extraNativeBuildInputs = [ self.patchelf ];
-          allowedRequisites =
-            builtins.filter (p: !(lib.hasSuffix ".sh" p))
-              super.stdenv.allowedRequisites;
-        };
-
-      in {
-        devStdenv = stdenv;
-
-        ${attr} = super.callPackage path {
-          inherit stdenv;
-        };
-      })
-    ];
+  graftStdenv = base: scripts: scripts.override {
+    inherit (base) initialPath cc shell extraNativeBuildInputs;
+    allowedRequisites =
+      builtins.filter (p: !(lib.hasSuffix ".sh" p))
+        base.allowedRequisites;
   };
+
+  devStdenv = graftStdenv nixpkgs.stdenv devpkgs.stdenv;
 in
 
-# pkgs.devStdenv
-pkgs.${attr}
+(lib.getAttrFromPath (lib.splitString "." attr) nixpkgs).override {
+  stdenv = devStdenv;
+}
