@@ -995,7 +995,7 @@ patchPhase() {
 
     local -a patchesArray
     if [ -n "$__structuredAttrs" ]; then
-        patchesArray=( ${patches:-"${patches[@]}"} )
+        patchesArray=( ${patches:+"${patches[@]}"} )
     else
         patchesArray=( ${patches:-} )
     fi
