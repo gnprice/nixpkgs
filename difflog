@@ -6,8 +6,22 @@ extract_hash() {
     echo "${b%%-*}"
 }
 
+find_hash() {
+    local outpath
+    if [[ "$1" = *.drv ]]; then
+        outpath=$(nix show-derivation "$1" \
+                  | jq -r '
+                      to_entries | .[0].value.outputs.out.path
+                      ')
+    else
+        outpath=$1
+    fi
+
+    extract_hash "$outpath"
+}
+
 striplog() {
-    hash=$(extract_hash "$1")
+    hash=$(find_hash "$1")
 
     # `expand` is because in `make` trace lines, I see
     # continuation lines indented with tabs locally
