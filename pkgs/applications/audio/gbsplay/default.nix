@@ -2,6 +2,7 @@
 
 stdenv.mkDerivation {
   name = "gbsplay-2016-12-17";
+  __structuredAttrs = true;
 
   src = fetchFromGitHub {
     owner = "mmitch";
