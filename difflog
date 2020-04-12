@@ -14,6 +14,9 @@ Each argument can be either:
  * the store path of a build output, or
  * the store path of a derivation for the build.
 
+Each argument will be passed to `nix log` to get the log,
+and also used to find the output hash to normalize out.
+
 Normalization includes:
  * replacing the output hash with zeroes
  * stripping ECMA-48(-style) terminal controls, like colors
