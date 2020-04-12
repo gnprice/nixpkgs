@@ -1,6 +1,24 @@
 #!/bin/bash
 set -eu
 
+# Compare two Nix build logs, normalizing out boring differences.
+#
+# Usage: ./difflog $out1 $out2
+#
+# This can be useful to test the effect of a change to build scripts,
+# especially a refactoring that's intended to have no effect.
+#
+# Each argument can be either:
+#  * the store path of a build output, or
+#  * the store path of a derivation for the build.
+#
+# Normalization includes:
+#  * replacing the output hash with zeroes
+#  * stripping ECMA-48(-style) terminal controls, like colors
+#  * replacing dates, timestamps, and timings with constants
+#  * sorting runs of certain common messages, to reduce
+#    nondeterminism from concurrency
+
 extract_hash() {
     local b="${1##*/}"
     echo "${b%%-*}"
